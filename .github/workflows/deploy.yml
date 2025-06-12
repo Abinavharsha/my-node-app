@@ -1,0 +1,17 @@
+name: Deploy to Cloudways
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+     
+    - name: Deploy the Docker
+      run: docker build -t nodeapp . && docker run -d -p 3000:3000 --name nodeapp nodeapp
