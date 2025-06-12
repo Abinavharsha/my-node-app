@@ -1,0 +1,32 @@
+name: Merge blog repos into blog branch
+
+on:
+  workflow_dispatch:  # manually triggered
+
+jobs:
+  merge-headlines:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout your repo
+        uses: actions/checkout@v4
+        with:
+          ref: blog
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Git config
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add headlines repo and fetch
+        env:
+          HEADLINES_REPO_URL: ${{ secrets.HEADLINES_REPO_URL }}
+        run: |
+          git remote add headlines "$HEADLINES_REPO_URL"
+          git fetch headlines
+
+      - name: Merge headlines/main into blog
+        run: |
+          git merge headlines/main --allow-unrelated-histories -m "Daily merge from headlines/github-daily"
+          git push origin blogs-daily
