@@ -1,4 +1,4 @@
-name: Merge changedetection.io into blog branch
+name: Merge changedetection.io into blogs-daily branch
 
 on:
   schedule:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout blog branch
+      - name: Checkout blogs-daily branch
         uses: actions/checkout@v4
         with:
           ref: blogs-daily
@@ -24,11 +24,11 @@ jobs:
       - name: Add changedetection.io as remote and fetch
         run: |
           git remote add changedetection https://github.com/dgtlmoon/changedetection.io.git
-          git fetch changedetection main --depth=1
+          git fetch changedetection master --depth=1
           echo "Remote branches:"
           git branch -r
 
-      - name: Merge changedetection/main into blog
+      - name: Merge changedetection/master into blogs-daily
         run: |
-          git merge changedetection/main --allow-unrelated-histories -m "Daily merge from changedetection.io"
+          git merge changedetection/master --allow-unrelated-histories -m "Daily merge from changedetection.io"
           git push origin blogs-daily
