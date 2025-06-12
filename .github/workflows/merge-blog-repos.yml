@@ -13,7 +13,7 @@ jobs:
       - name: Checkout blog branch
         uses: actions/checkout@v4
         with:
-          ref: blog
+          ref: blogs-daily
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Git config
@@ -31,4 +31,4 @@ jobs:
       - name: Merge changedetection/main into blog
         run: |
           git merge changedetection/main --allow-unrelated-histories -m "Daily merge from changedetection.io"
-          git push origin blog
+          git push origin blogs-daily
