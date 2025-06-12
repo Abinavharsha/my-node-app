@@ -1,4 +1,4 @@
-name: Merge changedetection.io into blogs-daily branch
+name: Merge changedetection.io and push to my-node-app
 
 on:
   schedule:
@@ -6,11 +6,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  merge-headlines:
+  merge-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout blogs-daily branch
+      - name: Checkout temporary working branch
         uses: actions/checkout@v4
         with:
           ref: blogs-daily
@@ -25,15 +25,21 @@ jobs:
         run: |
           git remote add changedetection https://github.com/dgtlmoon/changedetection.io.git
           git fetch changedetection master --depth=1
-          echo "Remote branches:"
-          git branch -r
+          echo "Fetched changedetection/master"
 
-      - name: Merge changedetection/master into blog
+      - name: Merge changedetection/master into blogs-daily branch (auto-resolve conflicts)
         run: |
           git merge -X theirs changedetection/master --allow-unrelated-histories -m "Daily merge from changedetection.io" || \
-          (echo "Merge failed, resolving conflicts with theirs strategy" && \
+          (echo "Merge failed, resolving all conflicts with 'theirs' strategy" && \
            git checkout --theirs . && \
            git add . && \
-           git commit -m "Resolved conflicts using theirs strategy" && \
-           git push origin blogs-daily)
+           git commit -m "Conflict resolved using theirs strategy")
           git push origin blogs-daily
+
+      - name: Push merged blogs-daily branch to my-node-app repo
+        env:
+          TARGET_REPO_URL: https://Abinavharsha:${{ secrets.MY_NODE_APP_PAT }}@github.com/Abinavharsha/my-node-app.git
+        run: |
+          git remote add deploy "$TARGET_REPO_URL"
+          git push deploy blogs-daily:main --force
+
