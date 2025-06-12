@@ -1,0 +1,14 @@
+name: Notify on Branch Merge
+
+on:
+  push:
+    branches:
+      - merge-with-me  # Adjust this to the branch you want to monitor for merges
+
+jobs:
+  notify-merge:
+    runs-on: ubuntu-latest
+    if: startsWith(github.event.head_commit.message, 'Merge')  # Filter merge commits
+    steps:
+      - name: Print merge message
+        run: echo "✅ Merge completed into ${{ github.ref_name }} branch!"
