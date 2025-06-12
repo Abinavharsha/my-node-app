@@ -2,7 +2,6 @@ name: Auto Merge
 
 on:
   pull_request:
-    types: [closed]
 
 jobs:
   merge_check:
