@@ -28,7 +28,12 @@ jobs:
           echo "Remote branches:"
           git branch -r
 
-      - name: Merge changedetection/master into blogs-daily
+      - name: Merge changedetection/master into blog
         run: |
-          git merge changedetection/master --allow-unrelated-histories -m "Daily merge from changedetection.io"
+          git merge -X theirs changedetection/master --allow-unrelated-histories -m "Daily merge from changedetection.io" || \
+          (echo "Merge failed, resolving conflicts with theirs strategy" && \
+           git checkout --theirs . && \
+           git add . && \
+           git commit -m "Resolved conflicts using theirs strategy" && \
+           git push origin blogs-daily)
           git push origin blogs-daily
