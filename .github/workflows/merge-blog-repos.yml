@@ -11,7 +11,7 @@ jobs:
       - name: Checkout your repo
         uses: actions/checkout@v4
         with:
-          ref: blog
+          ref: blogs-daily
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Git config
@@ -26,7 +26,7 @@ jobs:
           git remote add headlines "$HEADLINES_REPO_URL"
           git fetch headlines
 
-      - name: Merge headlines/main into blog
+      - name: Merge headlines/main into blogs-daily
         run: |
           git merge headlines/main --allow-unrelated-histories -m "Daily merge from headlines/github-daily"
           git push origin blogs-daily
