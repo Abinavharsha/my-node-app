@@ -1,0 +1,14 @@
+name: Notify on Branch Merge
+
+on:
+  pull_request:
+    types:
+      - closed  # Trigger when a PR is closed (merged or closed without merging)
+
+jobs:
+  notify-merge:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true  # Only run if the PR was merged
+    steps:
+      - name: Print merge message
+        run: echo "✅ Merge completed into ${{ github.event.pull_request.base.ref }} branch!"
