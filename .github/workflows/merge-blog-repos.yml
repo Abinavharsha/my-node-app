@@ -26,7 +26,7 @@ jobs:
           git remote add headlines "$HEADLINES_REPO_URL"
           git fetch headlines
 
-      - name: Merge headlines/main into blogs-daily
+      - name: Merge dgtlmoon/changedetection.io into blogs-daily
         run: |
           git merge headlines/main --allow-unrelated-histories -m "Daily merge from headlines/github-daily"
           git push origin blogs-daily
