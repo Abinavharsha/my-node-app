@@ -28,5 +28,5 @@ jobs:
 
       - name: Merge dgtlmoon/changedetection.io into blogs-daily
         run: |
-          git merge headlines/main --allow-unrelated-histories -m "Daily merge from dgtlmoon/changedetection.io"
+          git merge dgtlmoon/changedetection.io --allow-unrelated-histories -m "Daily merge from dgtlmoon/changedetection.io"
           git push origin blogs-daily
