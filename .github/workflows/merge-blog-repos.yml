@@ -1,17 +1,19 @@
-name: Merge blog repos into blog branch
+name: Merge changedetection.io into blog branch
 
 on:
-  workflow_dispatch:  # manually triggered
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight UTC
+  workflow_dispatch:
 
 jobs:
   merge-headlines:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout your repo
+      - name: Checkout blog branch
         uses: actions/checkout@v4
         with:
-          ref: blogs-daily
+          ref: blog
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Git config
@@ -19,14 +21,14 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Add headlines repo and fetch
-        env:
-          HEADLINES_REPO_URL: ${{ secrets.HEADLINES_REPO_URL }}
+      - name: Add changedetection.io as remote and fetch
         run: |
-          git remote add headlines "$HEADLINES_REPO_URL"
-          git fetch headlines
+          git remote add changedetection https://github.com/dgtlmoon/changedetection.io.git
+          git fetch changedetection main --depth=1
+          echo "Remote branches:"
+          git branch -r
 
-      - name: Merge dgtlmoon/changedetection.io into blogs-daily
+      - name: Merge changedetection/main into blog
         run: |
-          git merge dgtlmoon/changedetection.io --allow-unrelated-histories -m "Daily merge from dgtlmoon/changedetection.io"
-          git push origin blogs-daily
+          git merge changedetection/main --allow-unrelated-histories -m "Daily merge from changedetection.io"
+          git push origin blog
