@@ -1,7 +1,9 @@
 name: Merge blog repos into blog branch
 
 on:
-  workflow_dispatch:  # manually triggered
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   merge-headlines:
