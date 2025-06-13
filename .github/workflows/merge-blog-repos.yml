@@ -1,8 +1,6 @@
 name: Merge changedetection.io and push to my-node-app
 
 on:
-  schedule:
-    - cron: '0 0 * * *'  # Daily at midnight UTC
   workflow_dispatch:
 
 jobs:
