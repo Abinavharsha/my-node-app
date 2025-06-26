@@ -18,7 +18,7 @@ jobs:
           if [[ "${GITHUB_REF##*/}" == "main" ]]; then
             echo "url=http://20.187.146.225/webhook" >> $GITHUB_OUTPUT
           elif [[ "${GITHUB_REF##*/}" == "merge_with_me" ]]; then
-            echo "url=http://174.176.208.144/webhook" >> $GITHUB_OUTPUT
+            echo "url=http://74.176.208.144/webhook" >> $GITHUB_OUTPUT
           elif [[ "${GITHUB_REF##*/}" == "use_me_to_merge" ]]; then
             echo "url=http://10.0.0.3/webhook" >> $GITHUB_OUTPUT
           else
