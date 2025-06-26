@@ -1,0 +1,17 @@
+name: Notify Local Webhook
+
+on:
+  push:
+    branches:
+      - main  # or the branch you want to track
+
+jobs:
+  notify-local:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send POST to Local Machine Webhook
+        run: |
+          curl -X POST http://20.187.146.225/webhook \
+            -H "Content-Type: application/json" \
+            -H "X-GitHub-Event: push" \
+            -d '{}'
