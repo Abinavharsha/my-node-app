@@ -5,6 +5,8 @@ I have edited this file, time to merge, if you see me in main, thats cool
 
 testting agsdsdsdsdsdsdsain 1
 
+haha you 
+
 if you see this line in local it works
 
 
@@ -14,3 +16,4 @@ this was edited from merger_with_me
 >>>>>>> merge_with_me
 >>>>>>
 >>>>>>bye bye
+>>>>>>can you
