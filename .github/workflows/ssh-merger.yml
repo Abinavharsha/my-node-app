@@ -49,7 +49,7 @@ jobs:
           BRANCH: ${{ steps.set-vars.outputs.branch }}
         run: |
           ssh $USER@$HOST <<EOF
-            cd /home/$USER/your-repo-folder
+            cd /home/$USER/my-node-app
             git checkout $BRANCH
             git pull origin $BRANCH
           EOF
