@@ -1,0 +1,55 @@
+name: SSH Git Pull Per Branch
+
+on:
+  push:
+    branches:
+      - main
+      - merge_with_me
+      - use_me_to_merge
+
+jobs:
+  ssh-pull:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set Host, Branch, and Username
+        id: set-vars
+        run: |
+          BRANCH_NAME="${GITHUB_REF##*/}"
+          echo "Branch: $BRANCH_NAME"
+
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            echo "host=20.187.146.225" >> $GITHUB_OUTPUT
+            echo "user=batman" >> $GITHUB_OUTPUT
+            echo "branch=main" >> $GITHUB_OUTPUT
+          elif [[ "$BRANCH_NAME" == "merge_with_me" ]]; then
+            echo "host=135.116.64.27" >> $GITHUB_OUTPUT
+            echo "user=githubtester" >> $GITHUB_OUTPUT
+            echo "branch=merge_with_me" >> $GITHUB_OUTPUT
+          elif [[ "$BRANCH_NAME" == "use_me_to_merge" ]]; then
+            echo "host=74.176.208.144" >> $GITHUB_OUTPUT
+            echo "user=thanos" >> $GITHUB_OUTPUT
+            echo "branch=use_me_to_merge" >> $GITHUB_OUTPUT
+          else
+            echo "Unsupported branch: $BRANCH_NAME"
+            exit 1
+          fi
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ steps.set-vars.outputs.host }} >> ~/.ssh/known_hosts
+
+      - name: SSH and Git Pull
+        env:
+          HOST: ${{ steps.set-vars.outputs.host }}
+          USER: ${{ steps.set-vars.outputs.user }}
+          BRANCH: ${{ steps.set-vars.outputs.branch }}
+        run: |
+          ssh $USER@$HOST <<EOF
+            cd /home/$USER/your-repo-folder
+            git checkout $BRANCH
+            git pull origin $BRANCH
+          EOF
