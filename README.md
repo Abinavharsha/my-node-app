@@ -7,5 +7,3 @@ testting again 1
 if you see this line in local it works
 
 this was edited on user_me_to_merge
-
-hi
