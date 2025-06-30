@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main
-      - merge_with_me
-      - use_me_to_merge
+      - dev
+      - qa
 
 jobs:
   ssh-pull:
@@ -25,11 +25,11 @@ jobs:
           elif [[ "$BRANCH_NAME" == "merge_with_me" ]]; then
             echo "host=135.116.64.27" >> $GITHUB_OUTPUT
             echo "user=githubtester" >> $GITHUB_OUTPUT
-            echo "branch=merge_with_me" >> $GITHUB_OUTPUT
+            echo "branch=dev" >> $GITHUB_OUTPUT
           elif [[ "$BRANCH_NAME" == "use_me_to_merge" ]]; then
             echo "host=72.146.152.65" >> $GITHUB_OUTPUT
             echo "user=githutester2" >> $GITHUB_OUTPUT
-            echo "branch=use_me_to_merge" >> $GITHUB_OUTPUT
+            echo "branch=qa" >> $GITHUB_OUTPUT
           else
             echo "Unsupported branch: $BRANCH_NAME"
             exit 1
