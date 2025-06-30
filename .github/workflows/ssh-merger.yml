@@ -12,28 +12,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set Variables Per Branch
+      - name: Set Host, Branch, Username, and Key
         id: set-vars
         run: |
           BRANCH_NAME="${GITHUB_REF##*/}"
           echo "Branch: $BRANCH_NAME"
 
           if [[ "$BRANCH_NAME" == "main" ]]; then
-            echo "hosts=20.187.146.225,192.168.1.10,72.146.152.65" >> $GITHUB_OUTPUT
-            echo "users=batman,robin,githubtester2" >> $GITHUB_OUTPUT
-            echo "keys=github-actions-key1,github-actions-key2,github-actions-key3" >> $GITHUB_OUTPUT
+            echo "host=20.187.146.225" >> $GITHUB_OUTPUT
+            echo "user=batman" >> $GITHUB_OUTPUT
+            echo "key=github2_id_rsa" >> $GITHUB_OUTPUT
             echo "branch=main" >> $GITHUB_OUTPUT
 
           elif [[ "$BRANCH_NAME" == "merge_with_me" ]]; then
-            echo "hosts=135.116.64.27" >> $GITHUB_OUTPUT
-            echo "users=githubtester" >> $GITHUB_OUTPUT
-            echo "keys=github-actions-key1" >> $GITHUB_OUTPUT
+            echo "host=135.116.64.27" >> $GITHUB_OUTPUT
+            echo "user=githubtester" >> $GITHUB_OUTPUT
+            echo "key=github2_id_rsa" >> $GITHUB_OUTPUT
             echo "branch=merge_with_me" >> $GITHUB_OUTPUT
 
           elif [[ "$BRANCH_NAME" == "use_me_to_merge" ]]; then
-            echo "hosts=74.176.208.144" >> $GITHUB_OUTPUT
-            echo "users=thanos" >> $GITHUB_OUTPUT
-            echo "keys=github-actions-key2" >> $GITHUB_OUTPUT
+            echo "host=72.146.152.65" >> $GITHUB_OUTPUT
+            echo "user=githubtester2" >> $GITHUB_OUTPUT
+            echo "key=github3_id_rsa" >> $GITHUB_OUTPUT
             echo "branch=use_me_to_merge" >> $GITHUB_OUTPUT
 
           else
@@ -41,41 +41,26 @@ jobs:
             exit 1
           fi
 
-      - name: Set up SSH Keys
+      - name: Set up SSH
         env:
-          SSH_PRIVATE_KEY_1: ${{ secrets.SSH_PRIVATE_KEY_1 }}
-          SSH_PRIVATE_KEY_2: ${{ secrets.SSH_PRIVATE_KEY_2 }}
-          SSH_PRIVATE_KEY_3: ${{ secrets.SSH_PRIVATE_KEY_3 }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KEY_NAME: ${{ steps.set-vars.outputs.key }}
+          HOST: ${{ steps.set-vars.outputs.host }}
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY_1" > ~/.ssh/github-actions-key1
-          echo "$SSH_PRIVATE_KEY_2" > ~/.ssh/github-actions-key2
-          echo "$SSH_PRIVATE_KEY_3" > ~/.ssh/github-actions-key3
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/$SSH_KEY_NAME
+          chmod 600 ~/.ssh/$SSH_KEY_NAME
+          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
 
-          chmod 600 ~/.ssh/github-actions-key*
-
-      - name: SSH and Git Pull on All Hosts
+      - name: SSH and Git Pull
         env:
-          HOSTS: ${{ steps.set-vars.outputs.hosts }}
-          USERS: ${{ steps.set-vars.outputs.users }}
-          KEYS: ${{ steps.set-vars.outputs.keys }}
+          HOST: ${{ steps.set-vars.outputs.host }}
+          USER: ${{ steps.set-vars.outputs.user }}
           BRANCH: ${{ steps.set-vars.outputs.branch }}
+          SSH_KEY_NAME: ${{ steps.set-vars.outputs.key }}
         run: |
-          IFS=',' read -ra HOST_ARRAY <<< "$HOSTS"
-          IFS=',' read -ra USER_ARRAY <<< "$USERS"
-          IFS=',' read -ra KEY_ARRAY <<< "$KEYS"
-
-          for i in "${!HOST_ARRAY[@]}"; do
-            HOST="${HOST_ARRAY[$i]}"
-            USER="${USER_ARRAY[$i]}"
-            KEY_NAME="${KEY_ARRAY[$i]}"
-
-            echo "Connecting to $USER@$HOST using key $KEY_NAME"
-            ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
-
-            ssh -o StrictHostKeyChecking=no -i ~/.ssh/$KEY_NAME $USER@$HOST <<EOF
-              cd /home/$USER/my-node-app
-              git checkout $BRANCH
-              GIT_SSH_COMMAND="ssh -i ~/.ssh/$KEY_NAME" git pull origin $BRANCH
-EOF
-          done
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/$SSH_KEY_NAME $USER@$HOST <<EOF
+            cd /home/$USER/my-node-app
+            git checkout $BRANCH
+            GIT_SSH_COMMAND="ssh -i ~/.ssh/$SSH_KEY_NAME" git pull origin $BRANCH
+          EOF
