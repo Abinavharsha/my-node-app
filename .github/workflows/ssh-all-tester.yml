@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set Host, Branch, and Username
+      - name: Set Host, Branch, Username, and SSH Key
         id: set-vars
         run: |
           BRANCH_NAME="${GITHUB_REF##*/}"
@@ -22,14 +22,17 @@ jobs:
             echo "host=20.187.146.225" >> $GITHUB_OUTPUT
             echo "user=batman" >> $GITHUB_OUTPUT
             echo "branch=main" >> $GITHUB_OUTPUT
+            echo "ssh_key=${{ secrets.SSH1_PRIVATE_KEY }}" >> $GITHUB_OUTPUT
           elif [[ "$BRANCH_NAME" == "dev" ]]; then
             echo "host=135.116.64.27" >> $GITHUB_OUTPUT
             echo "user=githubtester" >> $GITHUB_OUTPUT
             echo "branch=dev" >> $GITHUB_OUTPUT
+            echo "ssh_key=${{ secrets.SSH2_PRIVATE_KEY }}" >> $GITHUB_OUTPUT
           elif [[ "$BRANCH_NAME" == "qa" ]]; then
             echo "host=72.146.152.65" >> $GITHUB_OUTPUT
             echo "user=githutester2" >> $GITHUB_OUTPUT
             echo "branch=qa" >> $GITHUB_OUTPUT
+            echo "ssh_key=${{ secrets.SSH3_PRIVATE_KEY }}" >> $GITHUB_OUTPUT
           else
             echo "Unsupported branch: $BRANCH_NAME"
             exit 1
@@ -38,7 +41,7 @@ jobs:
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ steps.set-vars.outputs.ssh_key }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ steps.set-vars.outputs.host }} >> ~/.ssh/known_hosts
 
