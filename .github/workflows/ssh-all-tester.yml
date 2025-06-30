@@ -22,11 +22,11 @@ jobs:
             echo "host=20.187.146.225" >> $GITHUB_OUTPUT
             echo "user=batman" >> $GITHUB_OUTPUT
             echo "branch=main" >> $GITHUB_OUTPUT
-          elif [[ "$BRANCH_NAME" == "merge_with_me" ]]; then
+          elif [[ "$BRANCH_NAME" == "dev" ]]; then
             echo "host=135.116.64.27" >> $GITHUB_OUTPUT
             echo "user=githubtester" >> $GITHUB_OUTPUT
             echo "branch=dev" >> $GITHUB_OUTPUT
-          elif [[ "$BRANCH_NAME" == "use_me_to_merge" ]]; then
+          elif [[ "$BRANCH_NAME" == "qa" ]]; then
             echo "host=72.146.152.65" >> $GITHUB_OUTPUT
             echo "user=githutester2" >> $GITHUB_OUTPUT
             echo "branch=qa" >> $GITHUB_OUTPUT
