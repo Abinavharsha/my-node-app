@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set Host, Branch, Username, and Key
+      - name: Set Host, Branch, and Username
         id: set-vars
         run: |
           BRANCH_NAME="${GITHUB_REF##*/}"
@@ -21,46 +21,35 @@ jobs:
           if [[ "$BRANCH_NAME" == "main" ]]; then
             echo "host=20.187.146.225" >> $GITHUB_OUTPUT
             echo "user=batman" >> $GITHUB_OUTPUT
-            echo "key=github2_id_rsa" >> $GITHUB_OUTPUT
             echo "branch=main" >> $GITHUB_OUTPUT
-
           elif [[ "$BRANCH_NAME" == "merge_with_me" ]]; then
             echo "host=135.116.64.27" >> $GITHUB_OUTPUT
             echo "user=githubtester" >> $GITHUB_OUTPUT
-            echo "key=github_id_rsa" >> $GITHUB_OUTPUT
             echo "branch=merge_with_me" >> $GITHUB_OUTPUT
-
           elif [[ "$BRANCH_NAME" == "use_me_to_merge" ]]; then
             echo "host=72.146.152.65" >> $GITHUB_OUTPUT
             echo "user=githutester2" >> $GITHUB_OUTPUT
-            echo "key=github3_id_rsa" >> $GITHUB_OUTPUT
             echo "branch=use_me_to_merge" >> $GITHUB_OUTPUT
-
           else
             echo "Unsupported branch: $BRANCH_NAME"
             exit 1
           fi
 
       - name: Set up SSH
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_KEY_NAME: ${{ steps.set-vars.outputs.key }}
-          HOST: ${{ steps.set-vars.outputs.host }}
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/$SSH_KEY_NAME
-          chmod 600 ~/.ssh/$SSH_KEY_NAME
-          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ steps.set-vars.outputs.host }} >> ~/.ssh/known_hosts
 
       - name: SSH and Git Pull
         env:
           HOST: ${{ steps.set-vars.outputs.host }}
           USER: ${{ steps.set-vars.outputs.user }}
           BRANCH: ${{ steps.set-vars.outputs.branch }}
-          SSH_KEY_NAME: ${{ steps.set-vars.outputs.key }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/$SSH_KEY_NAME $USER@$HOST <<EOF
+          ssh $USER@$HOST <<EOF
             cd /home/$USER/my-node-app
             git checkout $BRANCH
-            GIT_SSH_COMMAND="ssh -i ~/.ssh/$SSH_KEY_NAME" git pull origin $BRANCH
+            git pull origin $BRANCH
           EOF
