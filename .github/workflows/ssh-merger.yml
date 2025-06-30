@@ -27,7 +27,7 @@ jobs:
           elif [[ "$BRANCH_NAME" == "merge_with_me" ]]; then
             echo "host=135.116.64.27" >> $GITHUB_OUTPUT
             echo "user=githutester" >> $GITHUB_OUTPUT
-            echo "key=github2_id_rsa" >> $GITHUB_OUTPUT
+            echo "key=github_id_rsa" >> $GITHUB_OUTPUT
             echo "branch=merge_with_me" >> $GITHUB_OUTPUT
 
           elif [[ "$BRANCH_NAME" == "use_me_to_merge" ]]; then
