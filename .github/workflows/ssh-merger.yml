@@ -32,7 +32,7 @@ jobs:
 
           elif [[ "$BRANCH_NAME" == "use_me_to_merge" ]]; then
             echo "host=72.146.152.65" >> $GITHUB_OUTPUT
-            echo "user=githubtester2" >> $GITHUB_OUTPUT
+            echo "user=githutester2" >> $GITHUB_OUTPUT
             echo "key=github3_id_rsa" >> $GITHUB_OUTPUT
             echo "branch=use_me_to_merge" >> $GITHUB_OUTPUT
 
